@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz sobre Qaitbay</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            background-color: #f4f4f4;
+        }
+        .scoreboard {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #222;
+            color: white;
+            padding: 10px;
+            font-size: 18px;
+        }
+        .container {
+            margin-top: 60px;
+            padding: 20px;
+        }
+        .question {
+            background: white;
+            padding: 15px;
+            margin: 10px auto;
+            border-radius: 8px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+        }
+        .question h3 {
+            margin-bottom: 10px;
+        }
+        .option {
+            display: block;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            background: #fff;
+        }
+        .option.correct {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .option.wrong {
+            background-color: #FF5733;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="scoreboard">
+        Respondidas: <span id="answered">0</span> | Certas: <span id="correct">0</span> | Erradas: <span id="wrong">0</span>
+    </div>
+
+    <div class="container" id="quiz-container">
+        <!-- Perguntas são geradas dinamicamente aqui -->
+    </div>
+
+    <script>
+        const questions = [
+            { q: "Onde fica a Cidadela de Qaitbay?", a: ["Alexandria, Egito", "Cairo, Egito", "Istambul, Turquia", "Meca, Arábia Saudita"], correct: 0 },
+            { q: "Quem mandou construir a Cidadela de Qaitbay?", a: ["Sultão Al-Ashraf Qaitbay", "Sultão Saladino", "Ramsés II", "Cleópatra"], correct: 0 },
+            { q: "Em que século foi construída a Cidadela de Qaitbay?", a: ["Século XV", "Século XIII", "Século X", "Século XIX"], correct: 0 },
+            { q: "A Cidadela de Qaitbay foi construída sobre as ruínas de qual monumento antigo?", a: ["Farol de Alexandria", "Pirâmide de Quéops", "Templo de Karnak", "Biblioteca de Alexandria"], correct: 0 },
+            { q: "Qual era a principal função da Cidadela de Qaitbay?", a: ["Defesa contra invasores", "Palácio Real", "Templo religioso", "Observatório astronômico"], correct: 0 },
+            { q: "Qual império ameaçava Alexandria na época da construção da cidadela?", a: ["Otomano", "Romano", "Grego", "Persa"], correct: 0 },
+            { q: "Qual material principal foi usado na construção da Cidadela de Qaitbay?", a: ["Pedra calcária", "Granito", "Madeira", "Tijolos de barro"], correct: 0 },
+            { q: "A Cidadela de Qaitbay está localizada às margens de qual mar?", a: ["Mar Mediterrâneo", "Mar Vermelho", "Mar Negro", "Oceano Índico"], correct: 0 },
+            { q: "A cidadela foi restaurada por qual governo no século XX?", a: ["Egito", "França", "Turquia", "Reino Unido"], correct: 0 },
+            { q: "O que havia no local antes da Cidadela de Qaitbay?", a: ["Farol de Alexandria", "Templo de Ísis", "Pirâmide de Miquerinos", "Forte Romano"], correct: 0 },
+            { q: "Qual é o estilo arquitetônico da cidadela?", a: ["Mameluco", "Gótico", "Bizantino", "Neoclássico"], correct: 0 },
+            { q: "Quantos andares tem a cidadela?", a: ["3", "5", "7", "1"], correct: 0 },
+            { q: "O que há dentro da cidadela hoje?", a: ["Museu Marítimo", "Palácio Presidencial", "Biblioteca Nacional", "Universidade"], correct: 0 },
+            { q: "A cidadela já foi ocupada por qual império?", a: ["Otomano", "Persa", "Francês", "Romano"], correct: 0 },
+            { q: "Em que ano foi construída a Cidadela de Qaitbay?", a: ["1477", "1200", "300 a.C.", "1882"], correct: 0 },
+            { q: "Quem foi o arquiteto responsável pela construção?", a: ["Desconhecido", "Imhotep", "Hemiunu", "Sinan"], correct: 0 },
+            { q: "A cidadela tem formato de:", a: ["Quadrado", "Círculo", "Triângulo", "Hexágono"], correct: 0 },
+            { q: "A cidadela foi usada por Napoleão Bonaparte?", a: ["Não", "Sim", "Parcialmente", "Não há registros"], correct: 0 },
+            { q: "O que aconteceu com o Farol de Alexandria antes da construção da cidadela?", a: ["Foi destruído por terremotos", "Foi desmontado", "Foi incendiado", "Afundou no mar"], correct: 0 },
+        ];
+
+        let answeredCount = 0;
+        let correctCount = 0;
+        let wrongCount = 0;
+
+        const container = document.getElementById("quiz-container");
+
+        function updateScoreboard() {
+            document.getElementById("answered").innerText = answeredCount;
+            document.getElementById("correct").innerText = correctCount;
+            document.getElementById("wrong").innerText = wrongCount;
+        }
+
+        function createQuiz() {
+            questions.forEach((item, index) => {
+                const questionDiv = document.createElement("div");
+                questionDiv.classList.add("question");
+
+                const questionTitle = document.createElement("h3");
+                questionTitle.innerText = `${index + 1}. ${item.q}`;
+                questionDiv.appendChild(questionTitle);
+
+                item.a.forEach((answer, i) => {
+                    const button = document.createElement("button");
+                    button.classList.add("option");
+                    button.innerText = answer;
+                    button.onclick = function () {
+                        if (!button.classList.contains("correct") && !button.classList.contains("wrong")) {
+                            answeredCount++;
+                            if (i === item.correct) {
+                                button.classList.add("correct");
+                                correctCount++;
+                            } else {
+                                button.classList.add("wrong");
+                                wrongCount++;
+                            }
+                            updateScoreboard();
+                        }
+                    };
+                    questionDiv.appendChild(button);
+                });
+
+                container.appendChild(questionDiv);
+            });
+        }
+
+        createQuiz();
+        updateScoreboard();
+    </script>
+</body>
+</html>
